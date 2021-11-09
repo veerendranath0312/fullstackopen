@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 
-const App = props => {
-  const [persons, setPersons] = useState(props.persons);
+const App = () => {
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [filterString, setFilterString] = useState('');
+
+  // using useEffect hook to get the datafrom the db.json file
+  useEffect(() => {
+    axios.get('http://localhost:3001/persons').then(response => {
+      setPersons(response.data);
+    });
+  }, []);
 
   // updating the persons state, onSubmit and
   // reset the newName state to its initial value
