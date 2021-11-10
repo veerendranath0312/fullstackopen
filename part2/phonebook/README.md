@@ -1,4 +1,4 @@
-# Course information
+# Phonebook
 
 Simple web applicaton that demonstrates Rendering collections and how to deal with Forms.
 
