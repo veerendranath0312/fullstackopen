@@ -1,6 +1,6 @@
 # Course information
 
-Simple web applicaton for understanding the core concepts of React
+Simple web applicaton for understanding the Component state and event handling.
 
 # Start the application
 
