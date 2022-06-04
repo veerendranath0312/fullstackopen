@@ -3,11 +3,10 @@ import { useState } from 'react';
 const StatisticLine = props => {
   const { name, value } = props;
   return (
-    <div>
-      <p>
-        {name}: {value}
-      </p>
-    </div>
+    <tr>
+      <td>{name} </td>
+      <td>{value}</td>
+    </tr>
   );
 };
 
@@ -15,7 +14,7 @@ const Statistics = ({ good, neutral, bad }) => {
   const total = good + neutral + bad;
 
   const calcAverage = () => (good - bad) / total;
-  const calcPositive = () => (100 * good) / total;
+  const calcPositive = () => `${(100 * good) / total}%`;
 
   if (total <= 0) {
     return (
@@ -27,12 +26,16 @@ const Statistics = ({ good, neutral, bad }) => {
 
   return (
     <div>
-      <StatisticLine name="good" value={good} />
-      <StatisticLine name="neutral" value={neutral} />
-      <StatisticLine name="bad" value={bad} />
-      <StatisticLine name="all" value={total} />
-      <StatisticLine name="average" value={calcAverage()} />
-      <StatisticLine name="positive" value={calcPositive()} />
+      <table>
+        <tbody>
+          <StatisticLine name="good" value={good} />
+          <StatisticLine name="neutral" value={neutral} />
+          <StatisticLine name="bad" value={bad} />
+          <StatisticLine name="all" value={total} />
+          <StatisticLine name="average" value={calcAverage()} />
+          <StatisticLine name="positive" value={calcPositive()} />
+        </tbody>
+      </table>
     </div>
   );
 };
