@@ -24,7 +24,10 @@ const App = () => {
     <div>
       find countries &nbsp;
       <input type="text" value={searchStr} onChange={handleSearchStr} />
-      <Countries filteredCountries={filteredCountries} />
+      <Countries
+        filteredCountries={filteredCountries}
+        setCountries={setCountries}
+      />
     </div>
   );
 };
