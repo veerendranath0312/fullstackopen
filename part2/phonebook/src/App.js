@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 
 import PersonForm from './components/PersonForm';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
+import personServer from './services/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -11,20 +11,23 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [searchStr, setSearchStr] = useState('');
 
-  // useEffect hook: runs along with the first render
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => setPersons(response.data));
-  }, []);
+  const handleNewName = event => setNewName(event.target.value);
+  const handleNewNumber = event => setNewNumber(event.target.value);
+  const handleSearchStr = event => setSearchStr(event.target.value);
 
   // Find the contact
   const findContact = newName =>
     persons.find(person => person.name === newName);
 
+  // useEffect hook: runs along with the first render
+  // GET ALL CONTACTS
+  useEffect(() => {
+    personServer.getAll().then(initialNotes => setPersons(initialNotes));
+  }, []);
+
+  // CREATE A CONTACT
   const addContact = event => {
     event.preventDefault();
-
     // Checking if the contact is already present or not
     if (findContact(newName)) {
       return alert(`${newName} is already added to phonebook`);
@@ -35,14 +38,24 @@ const App = () => {
       number: newNumber
     };
 
-    setPersons(persons.concat(newContact));
-    setNewName('');
-    setNewNumber('');
+    personServer.create(newContact).then(newNote => {
+      setPersons(persons.concat(newNote));
+      setNewName('');
+      setNewNumber('');
+    });
   };
 
-  const handleNewName = event => setNewName(event.target.value);
-  const handleNewNumber = event => setNewNumber(event.target.value);
-  const handleSearchStr = event => setSearchStr(event.target.value);
+  // DELETE A CONTACT
+  const deleteContact = person => {
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personServer
+        .deleteContact(person.id)
+        .then(response => {
+          setPersons(persons.filter(contact => contact.id !== person.id));
+        })
+        .catch(err => console.log(err));
+    }
+  };
 
   // Everytime the component renders we are filtering the persons array
   // and displaying the persons that match the search query/string
@@ -64,7 +77,10 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons filteredContacts={filteredContacts} />
+      <Persons
+        filteredContacts={filteredContacts}
+        deleteContact={deleteContact}
+      />
     </div>
   );
 };

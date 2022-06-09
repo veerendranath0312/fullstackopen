@@ -1,11 +1,11 @@
 import React from 'react';
 
-const Person = ({ name, number }) => {
+const Person = ({ person, deleteContact }) => {
   return (
-    <tr>
-      <td>{name}</td>
-      <td>{number}</td>
-    </tr>
+    <p>
+      {person.name} {person.number}{' '}
+      <button onClick={() => deleteContact(person)}>delete</button>
+    </p>
   );
 };
 
