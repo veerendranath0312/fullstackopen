@@ -4,6 +4,7 @@ import PersonForm from './components/PersonForm';
 import Filter from './components/Filter';
 import Persons from './components/Persons';
 import personServer from './services/persons';
+import axios from 'axios';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -25,12 +26,33 @@ const App = () => {
     personServer.getAll().then(initialNotes => setPersons(initialNotes));
   }, []);
 
+  // UPDATE A CONTACT
+  const updateContact = (id, newContact) => {
+    personServer.update(id, newContact).then(updatedContact => {
+      setPersons(
+        persons.map(person => (person.id === id ? updatedContact : person))
+      );
+      setNewName('');
+      setNewNumber('');
+    });
+  };
+
   // CREATE A CONTACT
   const addContact = event => {
     event.preventDefault();
-    // Checking if the contact is already present or not
-    if (findContact(newName)) {
-      return alert(`${newName} is already added to phonebook`);
+
+    // Finding if there is a contact with the same name
+    const existingContact = findContact(newName);
+
+    if (existingContact) {
+      // prettier-ignore
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const id = existingContact.id;
+        const newContact = { name: newName, number: newNumber };
+        
+        updateContact(id, newContact);
+      }
+      return;
     }
 
     const newContact = {
