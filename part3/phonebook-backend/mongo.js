@@ -13,14 +13,14 @@ if (process.argv.length < 3) {
 }
 
 const password = process.argv[2];
-const url = `mongodb+srv://admin:${password}@phonebook.hetrwbn.mongodb.net/?retryWrites=true&w=majority`;
+const url = `mongodb+srv://admin:${password}@phonebook.hetrwbn.mongodb.net/phonebook?retryWrites=true&w=majority`;
 
-const contactSchema = new mongoose.Schema({
+const personSchema = new mongoose.Schema({
   name: String,
   number: String
 });
 
-const Contact = mongoose.model('Contact', contactSchema);
+const Person = mongoose.model('Person', personSchema);
 
 // Create a newcontact if there are 5 args
 if (process.argv.length === 5) {
@@ -29,12 +29,12 @@ if (process.argv.length === 5) {
     .then(() => {
       console.log('Connected to DB');
 
-      const contact = new Contact({
+      const person = new Person({
         name: process.argv[3],
         number: process.argv[4]
       });
 
-      return contact.save();
+      return person.save();
     })
     .then(result => {
       console.log(`added ${result.name} number ${result.number} to phonebook`);
@@ -48,10 +48,10 @@ if (process.argv.length === 3) {
     .connect(url)
     .then(result => {
       console.log('Phonebook:');
-      return Contact.find({});
+      return Person.find({});
     })
-    .then(contacts => {
-      contacts.forEach(contact => {
+    .then(persons => {
+      persons.forEach(contact => {
         console.log(`${contact.name} ${contact.number}`);
       });
       mongoose.connection.close();
