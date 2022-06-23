@@ -2,8 +2,17 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const Person = require('./models/people.js');
 
+const {
+  getInfo,
+  getAllPeople,
+  createPerson,
+  getPersonById,
+  deletePersonById,
+  updatePersonById
+} = require('./controllers/peopleController.js');
+
+// Middlewares
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -14,91 +23,24 @@ app.use(
   morgan(':method :url :status :res[content-length] - :response-time ms :body')
 );
 
-app.get('/info', (req, res) => {
-  Person.find({}).then(persons => {
-    const html = `
-      <p>Phonebook has info for ${persons.length} people</p>
-  
-      <p>${new Date()}</p>
-    `;
-    res.send(html);
-  });
-});
+// Route handlers
+app.get('/info', getInfo);
 
-app.get('/api/persons', (req, res) => {
-  Person.find({}).then(persons => res.json(persons));
-});
+app.get('/api/persons', getAllPeople);
+app.post('/api/persons', createPerson);
 
-app.post('/api/persons', (req, res) => {
-  const data = req.body;
+app.get('/api/persons/:id', getPersonById);
+app.delete('/api/persons/:id', deletePersonById);
+app.put('/api/persons/:id', updatePersonById);
 
-  // const person = persons.find(
-  //   person => person.name.toLowerCase() === data.name.toLowerCase()
-  // );
-
-  // checking if both name and number fields are valid
-  // if (!(data.name && data.number)) {
-  //   return res.status(400).json({
-  //     error: 'Please provide both name and number'
-  //   });
-  // }
-
-  // checking if the person exists with the provided name
-  // if (person) {
-  //   return res.status(400).json({
-  //     error: 'name must be unique'
-  //   });
-  // }
-
-  const newPerson = new Person({
-    name: data.name,
-    number: data.number
-  });
-
-  newPerson.save().then(savedPerson => res.json(savedPerson));
-});
-
-app.get('/api/persons/:id', (req, res, next) => {
-  const { id } = req.params;
-  Person.findById(id)
-    .then(result => {
-      if (result) {
-        res.json(result);
-      } else {
-        res.status(404).json({
-          message: `Requested id ${id} not found`
-        });
-      }
-    })
-    .catch(error => next(error));
-});
-
-app.delete('/api/persons/:id', (req, res, next) => {
-  const { id } = req.params;
-  Person.findByIdAndDelete(id)
-    .then(result => res.status(204).end())
-    .catch(error => next(error));
-});
-
-app.put('/api/persons/:id', (req, res, next) => {
-  const { id } = req.params;
-  const data = req.body;
-
-  const newPerson = {
-    name: data.name,
-    number: data.number
-  };
-
-  Person.findByIdAndUpdate(id, newPerson, { new: true })
-    .then(updatedPerson => res.json(updatedPerson))
-    .catch(error => next(error));
-});
-
+// Error handling middleware
 const errorHandler = (error, req, res, next) => {
   console.log(error.message);
 
   if (error.name === 'CastError') {
     return res.status(400).send({ error: 'malformatted id' });
+  } else if (error.name === 'ValidationError') {
+    return res.status(400).json({ error: error.message });
   }
 
   next(error);

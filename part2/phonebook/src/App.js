@@ -82,12 +82,17 @@ const App = () => {
 
     const newContact = { name: newName, number: newNumber };
 
-    personServer.create(newContact).then(newNote => {
-      notificationFunc(`Added ${newName}`, true);
-      setPersons(persons.concat(newNote));
-      setNewName('');
-      setNewNumber('');
-    });
+    personServer
+      .create(newContact)
+      .then(newNote => {
+        notificationFunc(`Added ${newName}`, true);
+        setPersons(persons.concat(newNote));
+        setNewName('');
+        setNewNumber('');
+      })
+      .catch(error => {
+        notificationFunc(error.response.data.error, false);
+      });
   };
 
   // DELETE A CONTACT
