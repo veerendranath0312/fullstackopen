@@ -13,33 +13,6 @@ const totalLikes = blogs => {
   return totalLikesSum
 }
 
-// const blogs = [
-//   {
-//     _id: '5a422aa71b54a676234d17f8',
-//     title: 'Go To Statement Considered Harmful',
-//     author: 'Edsger W. Dijkstra',
-//     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-//     likes: 5,
-//     __v: 0
-//   },
-//   {
-//     _id: '5a422b3a1b54a676234d17f9',
-//     title: 'Canonical string reduction',
-//     author: 'Edsger W. Dijkstra',
-//     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
-//     likes: 12,
-//     __v: 0
-//   },
-//   {
-//     _id: '5a422b891b54a676234d17fa',
-//     title: 'First class tests',
-//     author: 'Robert C. Martin',
-//     url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
-//     likes: 10,
-//     __v: 0
-//   }
-// ]
-
 const favoriteBlog = blogs => {
   const likes = blogs.map(blog => blog.likes)
   const max = Math.max(...likes)
@@ -54,8 +27,47 @@ const favoriteBlog = blogs => {
   }
 }
 
+const mostBlogs = blogs => {
+  // 1. map unique elements
+  const uniqueElements = blogs.reduce((initial, blog) => {
+    initial[blog.author] = initial[blog.author] ? initial[blog.author] + 1 : 1
+    return initial
+  }, {})
+
+  // 2. convert object into entries (array of arrays)
+  const arrayOfArrays = Object.entries(uniqueElements)
+
+  const frequentAuthor = arrayOfArrays.reduce(
+    (initial, element) => {
+      return element[1] >= initial[1] ? element : initial
+    },
+    [null, 0]
+  )
+
+  console.log(frequentAuthor)
+
+  return {
+    author: frequentAuthor[0],
+    blogs: frequentAuthor[1]
+  }
+}
+
+const mostLikes = blogs => {
+  const likes = blogs.map(blog => blog.likes)
+  const max = Math.max(...likes)
+
+  const maxLikesIndex = likes.indexOf(max)
+  const favorite = blogs[maxLikesIndex]
+
+  return {
+    author: favorite.author,
+    likes: favorite.likes
+  }
+}
 module.exports = {
   dummy,
   totalLikes,
-  favoriteBlog
+  favoriteBlog,
+  mostBlogs,
+  mostLikes
 }
