@@ -1,10 +1,11 @@
 const Blog = require('../models/blog.js')
 
-const getAllBlogs = (req, res) => {
-  Blog.find({}).then(blogs => res.json(blogs))
+const getAllBlogs = async (req, res) => {
+  const blogs = await Blog.find({})
+  res.json(blogs)
 }
 
-const createBlog = (req, res, next) => {
+const createBlog = async (req, res, next) => {
   const data = req.body
 
   const newBlog = Blog({
@@ -14,10 +15,12 @@ const createBlog = (req, res, next) => {
     likes: data.likes
   })
 
-  newBlog
-    .save()
-    .then(savedBlog => res.status(201).json(savedBlog))
-    .catch(error => next(error))
+  try {
+    const savedBlog = await newBlog.save()
+    res.status(201).json(savedBlog)
+  } catch (error) {
+    next(error)
+  }
 }
 
 module.exports = {
