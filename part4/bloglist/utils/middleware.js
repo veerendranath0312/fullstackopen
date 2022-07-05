@@ -7,6 +7,10 @@ const errorHandler = (error, req, res, next) => {
     res.status(400).json({
       error: error.message
     })
+  } else if (error.name === 'CastError') {
+    res.status(400).json({
+      error: error.message
+    })
   }
 
   next(error)
