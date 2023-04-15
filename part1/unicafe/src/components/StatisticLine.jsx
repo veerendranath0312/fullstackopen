@@ -1,8 +1,13 @@
 const StatisticLine = (props) => {
   return (
-    <p>
-      {props.text} {props.value}
-    </p>
+    <tr>
+      <td>{props.text}</td>
+      {props.text === "positive" ? (
+        <td> {props.value}%</td>
+      ) : (
+        <td> {props.value}</td>
+      )}
+    </tr>
   );
 };
 
