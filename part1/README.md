@@ -14,7 +14,10 @@ Each folder in the `part1` is a separate application.
 
 ```bash
 # Head to the desired exercise (courseinfo, unicafe or anecdotes)
-$ cd courseinfo
+$ cd anecdotes
+
+# Install dependancies
+$ npm install
 
 # Start the application
 $ npm run dev
