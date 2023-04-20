@@ -1,20 +1,21 @@
 import React from "react";
 import "./App.css";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import Person from "./components/Person";
 
 function App() {
   const [persons, setPersons] = React.useState([
-    {
-      id: 1,
-      name: "Arto Hellas",
-      number: "040-1234567",
-    },
+    { name: "Arto Hellas", number: "040-123456", id: 1 },
+    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
+    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
+    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
   ]);
 
   const [formData, setFormData] = React.useState({
     newName: "",
     newNumber: "",
+    filter: "",
   });
 
   // Update the 'formData' state on every change of input field
@@ -57,35 +58,25 @@ function App() {
     });
   }
 
+  const filteredPersons = persons.filter((person) =>
+    person.name.toLowerCase().includes(formData.filter.toLowerCase())
+  );
+
   return (
     <div className="App">
       <h2>Phonebook</h2>
-      <form onSubmit={addPerson}>
-        <div>
-          <label htmlFor="name">name: </label>
-          <input
-            type="text"
-            name="newName"
-            id="name"
-            value={formData.newName}
-            onChange={handleChange}
-          />
-        </div>
-        <div>
-          <label htmlFor="number">number: </label>
-          <input
-            type="text"
-            name="newNumber"
-            id="number"
-            value={formData.newNumber}
-            onChange={handleChange}
-          />
-        </div>
-        <button>add</button>
-      </form>
-      <h2>Numbers</h2>
 
-      <Persons persons={persons} />
+      <Filter filterString={formData.filter} handleChange={handleChange} />
+
+      <h2>Add a new</h2>
+      <PersonForm
+        formData={formData}
+        handleChange={handleChange}
+        addPerson={addPerson}
+      />
+
+      <h2>Numbers</h2>
+      <Persons persons={filteredPersons} />
     </div>
   );
 }
