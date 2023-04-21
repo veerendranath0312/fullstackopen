@@ -5,6 +5,8 @@ import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 
+import personService from "./services/persons.js";
+
 function App() {
   const [persons, setPersons] = React.useState([]);
 
@@ -16,9 +18,9 @@ function App() {
 
   // The effect function only runs at first render
   React.useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then((res) => setPersons(res.data));
+    personService
+      .getAllPersons()
+      .then((initialPersons) => setPersons(initialPersons));
   }, []);
 
   // Update the 'formData' state on every change of input field
@@ -37,27 +39,24 @@ function App() {
   function addPerson(event) {
     event.preventDefault();
 
-    setPersons((prevPersons) => {
-      // Check if the person is already exists in 'persons'
-      const person = prevPersons.find(
-        (person) => person.name === formData.newName
-      );
+    // Check if the person already exists
+    const person = persons.find((person) => person.name === formData.newName);
 
-      // If exists, return the 'prevPersons'
-      if (person) {
-        alert(`${formData.newName} is already added to phonebook`);
-        return [...prevPersons];
-      }
+    // If exists, alert the user and return
+    if (person) {
+      alert(`${formData.newName} is already added to phonebook`);
+      return;
+    }
 
-      // If not, add the person to 'persons'
-      return [
-        ...prevPersons,
-        {
-          id: prevPersons.length + 1,
-          name: formData.newName,
-          number: formData.newNumber,
-        },
-      ];
+    // If not, Create a new person
+    const newPerson = {
+      name: formData.newName,
+      number: formData.newNumber,
+    };
+
+    // Add person to database
+    personService.createPerson(newPerson).then((createdPerson) => {
+      setPersons((prevPersons) => [...prevPersons, createdPerson]);
     });
   }
 
