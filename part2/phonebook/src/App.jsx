@@ -1,22 +1,25 @@
 import React from "react";
+import axios from "axios";
 import "./App.css";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
 
 function App() {
-  const [persons, setPersons] = React.useState([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
+  const [persons, setPersons] = React.useState([]);
 
   const [formData, setFormData] = React.useState({
     newName: "",
     newNumber: "",
     filter: "",
   });
+
+  // The effect function only runs at first render
+  React.useEffect(() => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then((res) => setPersons(res.data));
+  }, []);
 
   // Update the 'formData' state on every change of input field
   // The properties of 'formData' should match with values of 'name' attributes
