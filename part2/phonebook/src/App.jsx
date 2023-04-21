@@ -42,9 +42,15 @@ function App() {
     // Check if the person already exists
     const person = persons.find((person) => person.name === formData.newName);
 
-    // If exists, alert the user and return
+    // If person exists and user want to update the number,
+    // then update the old number with a new number
     if (person) {
-      alert(`${formData.newName} is already added to phonebook`);
+      const confirmUpdate = window.confirm(
+        `${person.name} is already added to phonebook, replace the old number with a new one?`
+      );
+
+      confirmUpdate && updatePhoneNumber(person);
+
       return;
     }
 
@@ -58,6 +64,33 @@ function App() {
     personService.createPerson(newPerson).then((createdPerson) => {
       setPersons((prevPersons) => [...prevPersons, createdPerson]);
     });
+  }
+
+  function updatePhoneNumber(person) {
+    const updatedPerson = { ...person, number: formData.newNumber };
+    personService.updatePerson(person.id, updatedPerson).then((savedPerson) => {
+      setPersons((prevPersons) =>
+        prevPersons.map((item) => (item.id === person.id ? savedPerson : item))
+      );
+    });
+    console.log("Phone number updated...");
+  }
+
+  // Delete person
+  function handleDelete(id) {
+    const person = persons.find((person) => person.id === id);
+
+    const confirmDelete = window.confirm(`Delete ${person.name} ?`);
+
+    // If user confirms then delete the user
+    if (confirmDelete) {
+      personService.deletePerson(id).then(() => {
+        console.log(`Deleted ${person.name}`);
+        setPersons((prevPersons) =>
+          prevPersons.filter((person) => person.id !== id)
+        );
+      });
+    }
   }
 
   const filteredPersons = persons.filter((person) =>
@@ -78,7 +111,7 @@ function App() {
       />
 
       <h2>Numbers</h2>
-      <Persons persons={filteredPersons} />
+      <Persons persons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 }
