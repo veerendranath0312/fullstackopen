@@ -1,15 +1,16 @@
 function Filter(props) {
   return (
-    <div>
-      <label htmlFor="filter">filter shown with </label>
+    <form className="form-filter">
+      <label htmlFor="filter">Filter shown with </label>
       <input
         type="text"
         id="filter"
         name="filter"
         value={props.filterString}
         onChange={props.handleChange}
+        placeholder="Search..."
       />
-    </div>
+    </form>
   );
 }
 
