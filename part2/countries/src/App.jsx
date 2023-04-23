@@ -7,6 +7,7 @@ import "./App.css";
 function App() {
   const [value, setValue] = React.useState("");
   const [countries, setCountries] = React.useState([]);
+  const [filteredCountries, setFilteredCountries] = React.useState([]);
 
   React.useEffect(() => {
     axios
@@ -16,18 +17,23 @@ function App() {
 
   function handleChange(event) {
     setValue(event.target.value);
+    const filtered = countries.filter((country) =>
+      country.name.common.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredCountries(filtered);
   }
-
-  const filteredCountries = countries.filter((country) =>
-    country.name.common.toLowerCase().includes(value.toLowerCase())
-  );
 
   return (
     <>
       <h2>Search Countries</h2>
       <Form value={value} handleChange={handleChange} />
+
       {filteredCountries.length > 0 && (
-        <Countries countries={filteredCountries} value={value} />
+        <Countries
+          countries={filteredCountries}
+          value={value}
+          setFilteredCountries={setFilteredCountries}
+        />
       )}
     </>
   );

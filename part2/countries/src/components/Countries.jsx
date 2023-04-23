@@ -1,7 +1,7 @@
 import Country from "./Country";
 
 function Countries(props) {
-  const { countries, value } = props;
+  const { countries, value, setFilteredCountries } = props;
 
   if (value.length === 0) {
     return null;
@@ -15,7 +15,12 @@ function Countries(props) {
     return (
       <>
         {countries.map((country) => (
-          <p key={country.ccn3}>{country.name.common}</p>
+          <p key={country.ccn3}>
+            {country.name.common}{" "}
+            <button onClick={() => setFilteredCountries([country])}>
+              show
+            </button>
+          </p>
         ))}
       </>
     );

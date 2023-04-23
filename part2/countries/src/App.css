@@ -36,6 +36,7 @@ form input {
   display: flex;
   flex-direction: column;
   max-width: 250px;
+  margin-bottom: 20px;
 }
 
 .country h2 {
@@ -69,4 +70,45 @@ form input {
 .country-languages {
   margin-left: 40px;
   font-size: 13px;
+}
+
+p:not(:last-child) {
+  margin-bottom: 5px;
+}
+
+p button {
+  cursor: pointer;
+  outline: none;
+  border: 1px solid #ffa7c4;
+  border-radius: 5px;
+  padding: 0px 5px;
+  margin-left: 10px;
+  background: transparent;
+  color: #ffa7c4;
+  font-size: 13px;
+}
+
+p button:hover {
+  background: #ffa7c4;
+  color: #282c35;
+}
+
+/* Weather details styling */
+.weather-details {
+  border: 2px solid #ffa7c4;
+  max-width: 250px;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.weather-details .weather-details img {
+  display: block;
+  margin: auto;
+}
+
+.weather-details p span {
+  font-style: italic;
+  color: #ffa7c4;
 }
