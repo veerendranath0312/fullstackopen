@@ -1,9 +1,16 @@
 const express = require("express");
+const morgan = require("morgan");
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(express.json()); // parse incoming json payload
+
+// Create data token to log the payload
+morgan.token("data", (req, res) => JSON.stringify(req.body));
+app.use(
+  morgan(":method :url :status :res[content-length] - :response-time ms :data")
+);
 
 let persons = [
   {
