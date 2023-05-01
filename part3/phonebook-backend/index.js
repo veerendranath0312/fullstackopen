@@ -1,10 +1,12 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
+app.use(cors());
 app.use(express.json()); // parse incoming json payload
+app.use(express.static("dist"));
 
 // Create data token to log the payload
 morgan.token("data", (req, res) => JSON.stringify(req.body));
@@ -86,8 +88,10 @@ app.post("/api/persons", (req, res) => {
   };
 
   persons = [...persons, newPerson];
-  res.status(201).json({ data: persons });
+  res.status(201).json(newPerson);
 });
+
+const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}/`);
