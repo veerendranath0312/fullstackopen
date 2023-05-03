@@ -33,37 +33,12 @@ app.get("/api/persons", (req, res) => {
   });
 });
 
-app.get("/api/persons/:id", (req, res) => {
-  const { id } = req.params;
-
-  const person = persons.find((person) => person.id === Number(id));
-
-  if (!person) {
-    return res.status(400).json({ error: "person not found" });
-  }
-
-  res.status(200).json({ data: person });
-});
-
-app.delete("/api/persons/:id", (req, res) => {
-  const { id } = req.params;
-
-  persons = persons.filter((person) => person.id !== Number(id));
-
-  res.status(204).end();
-});
-
 app.post("/api/persons", (req, res) => {
   const data = req.body;
 
   if (!data.name || !data.number) {
     return res.status(400).json({ error: "name or number missing" });
   }
-
-  // const person = persons.find((person) => person.name === data.name);
-  // if (person) {
-  //   return res.status(400).json({ error: "name must be unique" });
-  // }
 
   const newPerson = Person({
     name: data.name,
@@ -74,6 +49,55 @@ app.post("/api/persons", (req, res) => {
     res.status(201).json(savedPerson);
   });
 });
+
+app.get("/api/persons/:id", (req, res, next) => {
+  const { id } = req.params;
+
+  Person.findById(id)
+    .then((person) => {
+      if (person) {
+        res.status(200).json(person);
+      } else {
+        res.status(404).json({ msg: "person not found" });
+      }
+    })
+    .catch((error) => next(error));
+});
+
+app.put("/api/persons/:id", (req, res, next) => {
+  const { id } = req.params;
+  const data = req.body;
+
+  const person = {
+    name: data.name,
+    number: data.number,
+  };
+
+  Person.findByIdAndUpdate(id, person, { new: true })
+    .then((savedPerson) => res.status(200).json(savedPerson))
+    .catch((error) => next(error));
+});
+
+app.delete("/api/persons/:id", (req, res, next) => {
+  const { id } = req.params;
+
+  Person.findByIdAndRemove(id)
+    .then((result) => res.status(204).end())
+    .catch((error) => next(error));
+});
+
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message);
+
+  if (error.name === "CastError") {
+    return res.status(400).json({ error: "malformatted id" });
+  }
+
+  next(error);
+};
+
+// This has to be the last middleware
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 8080;
 
