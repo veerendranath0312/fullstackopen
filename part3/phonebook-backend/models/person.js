@@ -1,8 +1,22 @@
 const mongoose = require("mongoose");
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true,
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    required: true,
+    validate: {
+      validator: function (number) {
+        return /^(\d{2}|\d{3})-[0-9]+$/g.test(number);
+      },
+      message: "Phone number validation failed",
+    },
+  },
 });
 
 personSchema.set("toJSON", {

@@ -46,15 +46,6 @@ function App() {
   function addPerson(event) {
     event.preventDefault();
 
-    // Check if both fields are empty
-    if (!formData.newName || !formData.newNumber) {
-      handleNotification({
-        message: "Enter valid name & number!",
-        status: "failed",
-      });
-      return;
-    }
-
     // Check if the person already exists
     const person = persons.find((person) => person.name === formData.newName);
 
@@ -76,14 +67,22 @@ function App() {
     };
 
     // Add person to database
-    personService.createPerson(newPerson).then((createdPerson) => {
-      handleNotification({
-        message: `Added ${createdPerson.name}`,
-        status: "success",
-      });
+    personService
+      .createPerson(newPerson)
+      .then((createdPerson) => {
+        handleNotification({
+          message: `Added ${createdPerson.name}`,
+          status: "success",
+        });
 
-      setPersons((prevPersons) => [...prevPersons, createdPerson]);
-    });
+        setPersons((prevPersons) => [...prevPersons, createdPerson]);
+      })
+      .catch((error) => {
+        handleNotification({
+          message: error.response.data.error,
+          status: "failed",
+        });
+      });
   }
 
   function updatePhoneNumber(person) {
@@ -104,15 +103,10 @@ function App() {
       })
       .catch((error) => {
         handleNotification({
-          message: `${person.name} has already been removed from server`,
+          message: error.response.data.error,
           status: "failed",
         });
-
-        setPersons((prevPersons) =>
-          prevPersons.filter((item) => item.id !== person.id)
-        );
       });
-    console.log("Phone number updated...");
   }
 
   // Delete person
