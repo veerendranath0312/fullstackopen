@@ -1,0 +1,13 @@
+### Get all blogs
+GET http://localhost:8080/api/blogs HTTP/1.1
+
+### Create blog
+POST http://localhost:8080/api/blogs HTTP/1.1
+content-type: application/json
+
+{
+    "title": "Data Binding in React",
+    "author": "Josh W Comeau",
+    "url": "https://www.joshwcomeau.com/react/data-binding/",
+    "likes": 33855
+}
