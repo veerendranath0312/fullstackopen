@@ -47,6 +47,37 @@ test('a valid blog can be added', async () => {
   expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
 })
 
+test('If the likes property is missing, it will default to zero', async () => {
+  const newBlog = {
+    title: 'Using Forms in React',
+    author: 'Dave Ceddia',
+    url: 'https://daveceddia.com/react-forms/',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const blogs = await helper.blogsInDb()
+  const blog = blogs.find((blog) => blog.title === 'Using Forms in React')
+  expect(blog.likes).toBe(0)
+})
+
+test('blog without content is not added', async () => {
+  const newBlog = {
+    author: 'Kent C. Dodds',
+    url: 'https://kentcdodds.com/blog/props-vs-state',
+    likes: 2022,
+  }
+
+  await api.post('/api/blogs').send(newBlog).expect(400)
+
+  const blogs = await helper.blogsInDb()
+  expect(blogs).toHaveLength(helper.initialBlogs.length)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })
