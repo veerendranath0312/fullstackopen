@@ -78,6 +78,63 @@ test('blog without content is not added', async () => {
   expect(blogs).toHaveLength(helper.initialBlogs.length)
 })
 
+describe('Updating a specific blog', () => {
+  test('succeeds with a valid id', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+    blogToUpdate.likes = 24000
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(blogToUpdate)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    expect(response.body.likes).toBe(24000)
+  })
+
+  test('fails with status code 404 if blog does not exist', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+    blogToUpdate.likes = 24001
+
+    const nonExistingId = '645de9072d942488890933ef'
+
+    await api.put(`/api/blogs/${nonExistingId}`).send(blogToUpdate).expect(404)
+
+    const response = await api.get('/api/blogs')
+    const blog = response.body.find(
+      (blog) => blog.id === blogToUpdate.id.toString()
+    )
+    expect(blog.likes).toBe(23855)
+  })
+
+  test('fails with statuscode 400 if id is invalid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+    blogToUpdate.likes = 24002
+
+    const invalidId = '5a3d5da59070081a82a3445'
+
+    await api.put(`/api/blogs/${invalidId}`).send(blogToUpdate).expect(400)
+  })
+})
+
+describe('deletion of a note', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1)
+
+    const contents = blogsAtEnd.map((blog) => blog.title)
+    expect(contents).not.toContain(blogToDelete.title)
+  })
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })

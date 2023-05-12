@@ -21,6 +21,42 @@ const createBlog = async (req, res, next) => {
   }
 }
 
+// Update a blog
+const updateBlog = async (req, res, next) => {
+  const { id } = req.params
+  const data = req.body
+
+  try {
+    const updatedBlog = await Blog.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+      context: 'query',
+    })
+    if (updatedBlog) {
+      res.status(200).json(updatedBlog)
+    } else {
+      res.status(404).json({
+        msg: 'blog you are trying to update is not found',
+      })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+// Delete a blog
+const deleteBlog = async (req, res, next) => {
+  const { id } = req.params
+
+  try {
+    await Blog.findByIdAndRemove(id)
+    res.status(204).end()
+  } catch (error) {
+    next(error)
+  }
+}
+
 blogsRouter.route('/').get(getAllBlogs).post(createBlog)
+blogsRouter.route('/:id').put(updateBlog).delete(deleteBlog)
 
 module.exports = blogsRouter
