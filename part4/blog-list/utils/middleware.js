@@ -5,11 +5,15 @@ const unknownRequest = (req, res) => {
 }
 
 const errorHandler = (error, req, res, next) => {
-  // console.error(error.message)
-
   if (error.name === 'CastError') {
     return res.status(400).json({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
+    const { username } = error.errors
+    if (username) {
+      return res.status(400).json({
+        error: 'The username must be unique with a min of 3 characters long',
+      })
+    }
     return res.status(400).json({ error: error.message })
   }
 

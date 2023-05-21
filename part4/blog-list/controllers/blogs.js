@@ -1,10 +1,14 @@
 const express = require('express')
 const blogsRouter = express.Router()
 const Blog = require('../models/blog.js')
+const User = require('../models/user.js')
 
 // Get all blogs
 const getAllBlogs = async (req, res) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog.find({}).populate('user', {
+    username: 1,
+    name: 1,
+  })
   res.status(200).json(blogs)
 }
 
@@ -15,6 +19,11 @@ const createBlog = async (req, res, next) => {
 
   try {
     const savedBlog = await newBlog.save()
+
+    const users = await User.findById(savedBlog.user)
+    users.blogs = users.blogs.concat(savedBlog.id)
+    await users.save()
+
     res.status(201).json(savedBlog)
   } catch (error) {
     next(error)
