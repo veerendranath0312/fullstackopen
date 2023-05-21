@@ -29,53 +29,74 @@ test('blog posts should have id property', async () => {
   expect(blogs[0].id).toBeDefined()
 })
 
-test('a valid blog can be added', async () => {
-  const newBlog = {
-    title: 'Using Forms in React',
-    author: 'Dave Ceddia',
-    url: 'https://daveceddia.com/react-forms/',
-    likes: 285,
-  }
+describe('Addition of a new blog', () => {
+  let headers
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+  beforeEach(async () => {
+    const newUser = {
+      username: 'root',
+      name: 'root',
+      password: 'password',
+    }
 
-  const blogs = await helper.blogsInDb()
-  expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
-})
+    await api.post('/api/users').send(newUser)
 
-test('If the likes property is missing, it will default to zero', async () => {
-  const newBlog = {
-    title: 'Using Forms in React',
-    author: 'Dave Ceddia',
-    url: 'https://daveceddia.com/react-forms/',
-  }
+    const result = await api.post('/api/auth/login').send(newUser)
+    headers = {
+      Authorization: `Bearer ${result.body.token}`,
+    }
+  })
 
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/)
+  test('a valid blog can be added', async () => {
+    const newBlog = {
+      title: 'Using Forms in React',
+      author: 'Dave Ceddia',
+      url: 'https://daveceddia.com/react-forms/',
+      likes: 285,
+    }
 
-  const blogs = await helper.blogsInDb()
-  const blog = blogs.find((blog) => blog.title === 'Using Forms in React')
-  expect(blog.likes).toBe(0)
-})
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .set(headers)
+      .expect('Content-Type', /application\/json/)
 
-test('blog without content is not added', async () => {
-  const newBlog = {
-    author: 'Kent C. Dodds',
-    url: 'https://kentcdodds.com/blog/props-vs-state',
-    likes: 2022,
-  }
+    const blogs = await helper.blogsInDb()
+    expect(blogs).toHaveLength(helper.initialBlogs.length + 1)
+  })
 
-  await api.post('/api/blogs').send(newBlog).expect(400)
+  test('If the likes property is missing, it will default to zero', async () => {
+    const newBlog = {
+      title: 'Using Forms in React',
+      author: 'Dave Ceddia',
+      url: 'https://daveceddia.com/react-forms/',
+    }
 
-  const blogs = await helper.blogsInDb()
-  expect(blogs).toHaveLength(helper.initialBlogs.length)
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set(headers)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogs = await helper.blogsInDb()
+    const blog = blogs.find((blog) => blog.title === 'Using Forms in React')
+    expect(blog.likes).toBe(0)
+  })
+
+  test('blog without content is not added', async () => {
+    const newBlog = {
+      author: 'Kent C. Dodds',
+      url: 'https://kentcdodds.com/blog/props-vs-state',
+      likes: 2022,
+    }
+
+    await api.post('/api/blogs').send(newBlog).set(headers).expect(400)
+
+    const blogs = await helper.blogsInDb()
+    expect(blogs).toHaveLength(helper.initialBlogs.length)
+  })
 })
 
 describe('Updating a specific blog', () => {
