@@ -20,6 +20,15 @@ function App() {
     }
   }, [user])
 
+  React.useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
   const handleLoginDetails = (event) => {
     setLoginDetails((prevLoginDetails) => {
       return {
@@ -36,6 +45,7 @@ function App() {
       const user = await loginService.login(loginDetails)
 
       // save the token for other api requests
+      window.localStorage.setItem('loggedUser', JSON.stringify(user))
       blogService.setToken(user.token)
 
       // set the user info
@@ -46,6 +56,14 @@ function App() {
     } catch (error) {
       console.log('Error: ', error.response.data.error)
     }
+  }
+
+  const handleLogout = () => {
+    // remove token from local storage
+    window.localStorage.removeItem('loggedUser')
+
+    // set the user to null
+    setUser(null)
   }
 
   if (user === null) {
@@ -82,7 +100,13 @@ function App() {
   return (
     <div>
       <h2>blogs</h2>
-      <h4>{user.user.username} logged in</h4>
+      <h4>
+        {user.user.username} logged in{' '}
+        <button className="logout-btn" onClick={handleLogout}>
+          logout
+        </button>
+      </h4>
+
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
