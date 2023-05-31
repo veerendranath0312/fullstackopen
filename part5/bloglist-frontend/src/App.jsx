@@ -1,5 +1,6 @@
 import React from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './App.css'
@@ -16,6 +17,7 @@ function App() {
     author: '',
     url: '',
   })
+  const [notification, setNotification] = React.useState(null)
 
   React.useEffect(() => {
     if (user !== null) {
@@ -69,6 +71,11 @@ function App() {
       setLoginDetails({ username: '', password: '' })
     } catch (error) {
       console.log('Error: ', error.response.data.error)
+      setNotification({
+        status: 'failed',
+        message: error.response.data.error,
+      })
+      setTimeout(() => setNotification(null), 3000)
     }
   }
 
@@ -85,6 +92,13 @@ function App() {
 
     const savedBlog = await blogService.createBlog(blogDetails)
     setBlogs((prevBlogs) => [...prevBlogs, savedBlog])
+
+    setNotification({
+      status: 'success',
+      message: `a new blog ${blogDetails.title} by ${blogDetails.author} added`,
+    })
+    setTimeout(() => setNotification(null), 3000)
+
     setBlogDetails({ title: '', author: '', url: '' })
   }
 
@@ -92,6 +106,7 @@ function App() {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification notification={notification} />
         <form onSubmit={handleLogin}>
           <div>
             username: &nbsp;
@@ -122,6 +137,9 @@ function App() {
   return (
     <div>
       <h2>blogs</h2>
+
+      <Notification notification={notification} />
+
       <h4>
         {user.user.username} logged in{' '}
         <button className="logout-btn" onClick={handleLogout}>
