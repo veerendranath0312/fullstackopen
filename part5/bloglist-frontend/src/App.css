@@ -1,3 +1,11 @@
 .logout-btn {
   margin-left: 30px;
 }
+
+p {
+  margin: 0;
+}
+
+#btn-create {
+  margin-bottom: 20px;
+}

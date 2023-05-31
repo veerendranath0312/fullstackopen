@@ -11,6 +11,11 @@ function App() {
     username: '',
     password: '',
   })
+  const [blogDetails, setBlogDetails] = React.useState({
+    title: '',
+    author: '',
+    url: '',
+  })
 
   React.useEffect(() => {
     if (user !== null) {
@@ -33,6 +38,15 @@ function App() {
     setLoginDetails((prevLoginDetails) => {
       return {
         ...prevLoginDetails,
+        [event.target.name]: event.target.value,
+      }
+    })
+  }
+
+  const handleBlogDetails = (event) => {
+    setBlogDetails((prevBlogDetails) => {
+      return {
+        ...prevBlogDetails,
         [event.target.name]: event.target.value,
       }
     })
@@ -64,6 +78,14 @@ function App() {
 
     // set the user to null
     setUser(null)
+  }
+
+  const saveBlog = async (event) => {
+    event.preventDefault()
+
+    const savedBlog = await blogService.createBlog(blogDetails)
+    setBlogs((prevBlogs) => [...prevBlogs, savedBlog])
+    setBlogDetails({ title: '', author: '', url: '' })
   }
 
   if (user === null) {
@@ -107,6 +129,43 @@ function App() {
         </button>
       </h4>
 
+      <h2>create new</h2>
+      <form onSubmit={saveBlog}>
+        <div>
+          <label htmlFor="title">title: </label>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            value={blogDetails.title}
+            onChange={handleBlogDetails}
+          />
+        </div>
+        <br />
+        <div>
+          <label htmlFor="author">author: </label>
+          <input
+            type="text"
+            name="author"
+            id="author"
+            value={blogDetails.author}
+            onChange={handleBlogDetails}
+          />
+        </div>
+        <br />
+        <div>
+          <label htmlFor="url">url: </label>
+          <input
+            type="text"
+            name="url"
+            id="url"
+            value={blogDetails.url}
+            onChange={handleBlogDetails}
+          />
+        </div>
+        <br />
+        <button id="btn-create">create</button>
+      </form>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
