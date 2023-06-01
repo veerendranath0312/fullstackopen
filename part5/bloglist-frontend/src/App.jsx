@@ -1,6 +1,8 @@
 import React from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
+import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import './App.css'
@@ -18,6 +20,7 @@ function App() {
     url: '',
   })
   const [notification, setNotification] = React.useState(null)
+  const blogFormref = React.useRef()
 
   React.useEffect(() => {
     if (user !== null) {
@@ -100,6 +103,7 @@ function App() {
     setTimeout(() => setNotification(null), 3000)
 
     setBlogDetails({ title: '', author: '', url: '' })
+    blogFormref.current.toggleVisibility()
   }
 
   if (user === null) {
@@ -147,43 +151,14 @@ function App() {
         </button>
       </h4>
 
-      <h2>create new</h2>
-      <form onSubmit={saveBlog}>
-        <div>
-          <label htmlFor="title">title: </label>
-          <input
-            type="text"
-            name="title"
-            id="title"
-            value={blogDetails.title}
-            onChange={handleBlogDetails}
-          />
-        </div>
-        <br />
-        <div>
-          <label htmlFor="author">author: </label>
-          <input
-            type="text"
-            name="author"
-            id="author"
-            value={blogDetails.author}
-            onChange={handleBlogDetails}
-          />
-        </div>
-        <br />
-        <div>
-          <label htmlFor="url">url: </label>
-          <input
-            type="text"
-            name="url"
-            id="url"
-            value={blogDetails.url}
-            onChange={handleBlogDetails}
-          />
-        </div>
-        <br />
-        <button id="btn-create">create</button>
-      </form>
+      <Togglable ref={blogFormref}>
+        <BlogForm
+          blogDetails={blogDetails}
+          handleBlogDetails={handleBlogDetails}
+          saveBlog={saveBlog}
+        />
+      </Togglable>
+
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
