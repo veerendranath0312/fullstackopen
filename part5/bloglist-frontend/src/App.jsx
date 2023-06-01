@@ -14,11 +14,7 @@ function App() {
     username: '',
     password: '',
   })
-  const [blogDetails, setBlogDetails] = React.useState({
-    title: '',
-    author: '',
-    url: '',
-  })
+
   const [notification, setNotification] = React.useState(null)
   const blogFormref = React.useRef()
 
@@ -43,15 +39,6 @@ function App() {
     setLoginDetails((prevLoginDetails) => {
       return {
         ...prevLoginDetails,
-        [event.target.name]: event.target.value,
-      }
-    })
-  }
-
-  const handleBlogDetails = (event) => {
-    setBlogDetails((prevBlogDetails) => {
-      return {
-        ...prevBlogDetails,
         [event.target.name]: event.target.value,
       }
     })
@@ -90,9 +77,7 @@ function App() {
     setUser(null)
   }
 
-  const saveBlog = async (event) => {
-    event.preventDefault()
-
+  const saveBlog = async (blogDetails) => {
     const savedBlog = await blogService.createBlog(blogDetails)
     setBlogs((prevBlogs) => [...prevBlogs, savedBlog])
 
@@ -102,7 +87,6 @@ function App() {
     })
     setTimeout(() => setNotification(null), 3000)
 
-    setBlogDetails({ title: '', author: '', url: '' })
     blogFormref.current.toggleVisibility()
   }
 
@@ -152,11 +136,7 @@ function App() {
       </h4>
 
       <Togglable ref={blogFormref}>
-        <BlogForm
-          blogDetails={blogDetails}
-          handleBlogDetails={handleBlogDetails}
-          saveBlog={saveBlog}
-        />
+        <BlogForm createBlog={saveBlog} />
       </Togglable>
 
       {blogs.map((blog) => (

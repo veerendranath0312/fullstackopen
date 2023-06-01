@@ -1,5 +1,27 @@
-const BlogForm = (props) => {
-  const { blogDetails, handleBlogDetails, saveBlog } = props
+import React from 'react'
+
+const BlogForm = ({ createBlog }) => {
+  const [blogDetails, setBlogDetails] = React.useState({
+    title: '',
+    author: '',
+    url: '',
+  })
+
+  const handleBlogDetails = (event) => {
+    setBlogDetails((prevBlogDetails) => {
+      return {
+        ...prevBlogDetails,
+        [event.target.name]: event.target.value,
+      }
+    })
+  }
+
+  const saveBlog = (event) => {
+    event.preventDefault()
+    createBlog(blogDetails)
+
+    setBlogDetails({ title: '', author: '', url: '' })
+  }
 
   return (
     <>

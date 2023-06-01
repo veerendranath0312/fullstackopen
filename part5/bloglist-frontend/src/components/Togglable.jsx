@@ -1,5 +1,6 @@
 import React from 'react'
 
+// eslint-disable-next-line react/display-name
 const Togglable = React.forwardRef((props, refs) => {
   const [visible, setVisible] = React.useState(false)
 
