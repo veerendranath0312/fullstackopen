@@ -37,11 +37,18 @@ const updateBlog = async (req, res, next) => {
   const data = req.body
 
   try {
+    if (data.user !== req.user.id) {
+      return res
+        .status(401)
+        .json({ error: 'User is not authorized to perform the operation' })
+    }
+
     const updatedBlog = await Blog.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
       context: 'query',
     })
+
     if (updatedBlog) {
       res.status(200).json(updatedBlog)
     } else {

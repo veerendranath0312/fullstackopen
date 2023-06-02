@@ -21,7 +21,9 @@ function App() {
   React.useEffect(() => {
     if (user !== null) {
       blogService.getAllBlogs().then((response) => {
-        setBlogs(response)
+        const blogsCopy = [...response]
+        blogsCopy.sort((a, b) => b.likes - a.likes)
+        setBlogs(blogsCopy)
       })
     }
   }, [user])
@@ -79,7 +81,8 @@ function App() {
 
   const saveBlog = async (blogDetails) => {
     const savedBlog = await blogService.createBlog(blogDetails)
-    setBlogs((prevBlogs) => [...prevBlogs, savedBlog])
+    const allBlogs = await blogService.getAllBlogs()
+    setBlogs(allBlogs)
 
     setNotification({
       status: 'success',
@@ -88,6 +91,35 @@ function App() {
     setTimeout(() => setNotification(null), 3000)
 
     blogFormref.current.toggleVisibility()
+  }
+
+  const updateLikes = async (blog) => {
+    const data = {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url,
+      likes: blog.likes + 1,
+      user: blog.user.id,
+    }
+
+    // updating the likes by making a PUT resquest
+    await blogService.updateBlog(blog.id, data)
+
+    // updating blogs state
+    const allBlogs = await blogService.getAllBlogs()
+    allBlogs.sort((a, b) => b.likes - a.likes)
+    setBlogs(allBlogs)
+  }
+
+  const deleteBlog = async (id) => {
+    if (window.confirm('Confirm to delete the blog')) {
+      await blogService.deleteBlog(id)
+      setBlogs((prevBlogs) => {
+        return prevBlogs
+          .filter((blog) => blog.id !== id)
+          .sort((a, b) => b.likes - a.likes)
+      })
+    }
   }
 
   if (user === null) {
@@ -140,7 +172,12 @@ function App() {
       </Togglable>
 
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          updateLikes={() => updateLikes(blog)}
+          deleteBlog={() => deleteBlog(blog.id)}
+        />
       ))}
     </div>
   )
