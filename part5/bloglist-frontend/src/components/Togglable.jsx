@@ -1,6 +1,6 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
-// eslint-disable-next-line react/display-name
 const Togglable = React.forwardRef((props, refs) => {
   const [visible, setVisible] = React.useState(false)
 
@@ -31,5 +31,11 @@ const Togglable = React.forwardRef((props, refs) => {
     </div>
   )
 })
+
+Togglable.propTypes = {
+  children: PropTypes.element,
+}
+
+Togglable.displayName = 'Togglable'
 
 export default Togglable

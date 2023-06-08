@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types'
+
 const Notification = (props) => {
   const { notification } = props
   return (
@@ -9,6 +11,10 @@ const Notification = (props) => {
       )}
     </>
   )
+}
+
+Notification.propTypes = {
+  notification: PropTypes.oneOfType([PropTypes.object]),
 }
 
 export default Notification
