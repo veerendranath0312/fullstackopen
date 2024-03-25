@@ -1,8 +1,23 @@
-# React + Vite
+# Unicafe
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This web application collects customer feedback. There are only three options for feedback: good, neutral, and bad.
 
-Currently, two official plugins are available:
+While collecting feedbacks, the following statistics are displayed:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Total number of colllected feedbacks
+- The average score (good: 1, neutral: 0, bad: -1)
+- The percentage of positive feedback
+
+## Start the application
+
+To start an application, do the following :
+
+```bash
+# Install dependancies
+$ yarn install
+
+# Start the application
+$ yarn dev
+```
+
+You can then access the app on : [http://localhost:5173/](http://localhost:5173/)
