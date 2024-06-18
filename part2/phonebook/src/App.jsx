@@ -3,12 +3,14 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 import personsService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterStr, setFilterStr] = useState('')
+  const [notification, setNotification] = useState(null)
 
   // Fetching initial persons
   // useEffect hook is used to perform side effects in function components
@@ -46,6 +48,16 @@ const App = () => {
           setNewName('')
           setNewNumber('')
         })
+        .catch(() => {
+          setNotification({
+            message: `Information of ${person.name} has already been removed from server`,
+            type: 'error-msg',
+          })
+          setTimeout(() => {
+            setNotification(null)
+          }, 5000)
+          setPersons(persons.filter((p) => p.id !== person.id))
+        })
 
       return
     }
@@ -59,6 +71,13 @@ const App = () => {
       setPersons((prevPersons) => {
         return [...prevPersons, createdPerson]
       })
+      setNotification({
+        message: `Added ${createdPerson.name}`,
+        type: 'success-msg',
+      })
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
       setNewName('')
       setNewNumber('')
     })
@@ -86,6 +105,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification notification={notification} />
       <Filter
         filterStr={filterStr}
         handleFilterStrChange={handleFilterStrChange}
