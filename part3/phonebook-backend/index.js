@@ -1,9 +1,23 @@
 const express = require('express')
+const morgan = require('morgan')
 
 const app = express()
+const PORT = process.env.PORT || 8080
+
 app.use(express.json()) // Parse input JSON data
 
-const PORT = process.env.PORT || 8080
+// Using tiny configuration
+// app.use(morgan('tiny'))
+
+// First define a custom token to log the request body
+morgan.token('body', (req) => {
+  return JSON.stringify(req.body)
+})
+
+// then use that token in the format string of predefined tokens
+app.use(
+  morgan(':method :url :status :res[content-length] - :response-time ms :body')
+)
 
 let persons = [
   {
