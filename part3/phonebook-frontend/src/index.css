@@ -1,0 +1,17 @@
+.success-msg,
+.error-msg {
+  background: lightgray;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.success-msg {
+  color: green;
+  border: 1px solid green;
+}
+
+.error-msg {
+  color: red;
+  border: 1px solid red;
+}
