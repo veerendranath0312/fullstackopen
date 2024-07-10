@@ -2,7 +2,7 @@
 
 In this project, we developed a comprehensive phonebook application featuring a backend in Node.js and a frontend in React.js. Data is stored in a MongoDB database, and the application is deployed on [Render](https://render.com/) at the following URL.
 
-> https://phonebook-microservice.fly.dev/
+> https://phonebook-backend-l1f1.onrender.com/
 
 ## Start the application locally
 
