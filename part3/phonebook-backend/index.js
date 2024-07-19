@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const morgan = require('morgan')
+const Person = require('./models/person.js')
 
 const app = express()
 const PORT = process.env.PORT || 8080
@@ -53,7 +55,9 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.status(200).json(persons)
+  Person.find({}).then((persons) => {
+    res.status(200).json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (req, res) => {
@@ -76,21 +80,22 @@ app.post('/api/persons', (req, res) => {
     return res.status(400).json({ error: 'name or number missing' })
   }
 
-  const person = persons.find(
-    (person) => person.name.toLowerCase() === data.name.toLowerCase()
-  )
+  // const person = persons.find(
+  //   (person) => person.name.toLowerCase() === data.name.toLowerCase()
+  // )
 
   // Check the uniqueness of the name
   // Status code: 403 Forbidden
   // The request contained valid data and was understood by the server, but the server is refusing action.
   // e.g. creating a duplicate record where only one is allowed
-  if (person) {
-    res.status(403).json({ error: 'name must be unique' })
-  }
+  // if (person) {
+  //   res.status(403).json({ error: 'name must be unique' })
+  // }
 
-  const newPerson = { ...data, id: Math.floor(Math.random() * 100000000) }
-  persons = [...persons, newPerson]
-  res.status(201).json(persons)
+  const newPerson = new Person(data)
+  newPerson.save().then((savedPerson) => {
+    res.status(201).json(savedPerson)
+  })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
