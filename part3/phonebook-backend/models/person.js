@@ -10,8 +10,23 @@ mongoose
   )
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minlength: 3,
+    required: [true, 'A name is required'],
+  },
+  number: {
+    type: String,
+    minLength: 8,
+    required: true,
+    validate: {
+      validator: function (number) {
+        return /^(\d{2}|\d{3})-[0-9]+$/g.test(number)
+      },
+      message:
+        'Phone number should be in the following format: 09-1234556 and 040-22334455',
+    },
+  },
 })
 
 personSchema.set('toJSON', {

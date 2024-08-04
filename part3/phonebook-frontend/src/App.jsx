@@ -67,20 +67,29 @@ const App = () => {
       number: newNumber,
     }
 
-    personsService.createPerson(newPerson).then((createdPerson) => {
-      setPersons((prevPersons) => {
-        return [...prevPersons, createdPerson]
+    personsService
+      .createPerson(newPerson)
+      .then((createdPerson) => {
+        setPersons((prevPersons) => {
+          return [...prevPersons, createdPerson]
+        })
+        setNotification({
+          message: `Added ${createdPerson.name}`,
+          type: 'success-msg',
+        })
+        setTimeout(() => {
+          setNotification(null)
+        }, 3000)
+        setNewName('')
+        setNewNumber('')
       })
-      setNotification({
-        message: `Added ${createdPerson.name}`,
-        type: 'success-msg',
+      .catch((error) => {
+        setNotification({
+          message: error.response.data.error,
+          type: 'error-msg',
+        })
+        setTimeout(() => setNotification(null), 3000)
       })
-      setTimeout(() => {
-        setNotification(null)
-      }, 5000)
-      setNewName('')
-      setNewNumber('')
-    })
   }
 
   const handleNameChange = (event) => setNewName(event.target.value)
@@ -88,13 +97,14 @@ const App = () => {
   const handleFilterStrChange = (event) => setFilterStr(event.target.value)
 
   // Deleting a person
-  const handleDeletePerson = (person) => {
-    if (window.confirm(`Delete ${person.name}?`)) {
-      personsService
-        .deletePerson(person.id)
-        .then((deletedPerson) =>
-          setPersons(persons.filter((person) => person.id !== deletedPerson.id))
+  const handleDeletePerson = (personToDelete) => {
+    if (window.confirm(`Delete ${personToDelete.name}?`)) {
+      personsService.deletePerson(personToDelete.id).then(() => {
+        // axios.delete does not return any data after performing delete request
+        setPersons((prevPersons) =>
+          prevPersons.filter((person) => person.id !== personToDelete.id)
         )
+      })
     }
   }
 
@@ -102,6 +112,7 @@ const App = () => {
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().startsWith(filterStr.toLowerCase())
   )
+
   return (
     <div>
       <h1>Phonebook</h1>
