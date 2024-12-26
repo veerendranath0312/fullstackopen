@@ -9,7 +9,7 @@ const app = require('../app.js')
 
 const api = supertest(app)
 
-describe('when there is initially some notes saved', () => {
+describe('when there is initially some blogs saved', () => {
   beforeEach(async () => {
     await Blog.deleteMany({})
 
@@ -86,7 +86,7 @@ describe('when there is initially some notes saved', () => {
       .expect('Content-Type', /application\/json/)
   })
 
-  describe('deletion of a note', () => {
+  describe('deletion of a blog', () => {
     test('succeeds with status code 204 id id is valid', async () => {
       const blogsAtStart = await blogsInDb()
       const blogToDelete = blogsAtStart[0]
@@ -106,8 +106,6 @@ describe('when there is initially some notes saved', () => {
     test('updates likes property with status code 200 if id is valid', async () => {
       const blogsAtStart = await blogsInDb()
       const blogToBeUpdated = { ...blogsAtStart[0], likes: 25 }
-
-      console.log(blogToBeUpdated)
 
       const response = await api
         .put(`/api/v1/blogs/${blogToBeUpdated.id}`)

@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const config = require('./utils/config')
 const blogsRouter = require('./routes/blogRoutes')
+const userRouter = require('./routes/userRoutes')
 const { globalErrorHandler } = require('./utils/middleware')
 
 mongoose.set('strictQuery', false)
@@ -22,6 +23,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use('/api/v1/blogs', blogsRouter)
+app.use('/api/v1/users', userRouter)
 
 app.use(globalErrorHandler)
 
