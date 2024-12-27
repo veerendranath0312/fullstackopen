@@ -1,11 +1,12 @@
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 // Using JSend specification to send the response
 // JSend is a specification for a simple, no-frills, JSON based format for application-level communication.
 
 const getBlogs = async (req, res, next) => {
   try {
-    const blogs = await Blog.find({})
+    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
     res.status(200).json({
       status: 'success',
       results: blogs.length,
@@ -30,8 +31,17 @@ const getBlog = async (req, res, next) => {
 const createBlog = async (req, res, next) => {
   const data = req.body
 
+  // Get all the users to assign first user from the db to the new blog
+  const users = await User.find({})
+  const user = users[0]
+  const newBlog = { ...data, user: user.id }
+
   try {
-    const blog = await Blog.create(data)
+    const blog = await Blog.create(newBlog)
+
+    user.blogs = [...user.blogs, blog.id]
+    await user.save()
+
     res.status(201).json({ status: 'success', data: { blog } })
   } catch (error) {
     next(error)
