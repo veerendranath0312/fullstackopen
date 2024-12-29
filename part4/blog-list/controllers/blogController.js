@@ -30,20 +30,25 @@ const getBlog = async (req, res, next) => {
 
 const createBlog = async (req, res, next) => {
   const data = req.body
+  // const decodedToken = jwt.verify(req.token, process.env.SECRET)
 
-  // Get all the users to assign first user from the db to the new blog
-  const users = await User.find({})
-  const user = users[0]
+  // if (!decodedToken.id) {
+  //   return res.status(401).json({ status: 'fail', message: 'Invaild token' })
+  // }
+
+  // const user = await User.findById(decodedToken.id)
+  const user = req.user
   const newBlog = { ...data, user: user.id }
 
   try {
     const blog = await Blog.create(newBlog)
-
     user.blogs = [...user.blogs, blog.id]
     await user.save()
-
     res.status(201).json({ status: 'success', data: { blog } })
+
+    // res.status(200).json({ message: decodedToken })
   } catch (error) {
+    console.log(error)
     next(error)
   }
 }
@@ -68,6 +73,15 @@ const updateBlog = async (req, res, next) => {
 const deleteBlog = async (req, res, next) => {
   const { id } = req.params
   try {
+    const blog = await Blog.findById(id)
+
+    if (blog.user.toString() !== req.decodedToken.id) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'User is not authorized to delete the blog',
+      })
+    }
+
     await Blog.findByIdAndDelete(id)
     res.status(204).json({ status: 'success', data: null })
   } catch (error) {
